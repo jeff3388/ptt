@@ -47,7 +47,7 @@ class sqlTool:
 
     @classmethod
     @beartype
-    def insert_data(cls, table_name, data_list: list):
+    def insert_data(cls, table_name: str, data_list: list):
         sql = '''
               INSERT INTO {}
               (url, state)
