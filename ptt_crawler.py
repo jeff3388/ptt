@@ -47,43 +47,24 @@ class sqlTool:
 
     @classmethod
     @beartype
-    def insert_data(cls, data_list: list):
+    def insert_data(cls, table_name, data_list: list):
         sql = '''
-              INSERT INTO stock
+              INSERT INTO {}
               (url, state)
               VALUES ("{}",{})
               '''
         cls.open_connection()
 
         for data in data_list:
-            exec_sql = sql.format(data['url'], data['state'])
+            exec_sql = sql.format(table_name, data['url'], data['state'])
             cls.cur.execute(exec_sql)
             cls.conn.commit()  # 提交資料
 
         cls.close_database_connection()
 
-    @classmethod
-    @rollback
-    @beartype
-    def select_data(cls):
-        rows = ''
-        sql = '''
-        SELECT * 
-        FROM lottery_token
-        ORDER BY id DESC
-        '''
 
-        cls.open_connection()
-
-        cls.cur.execute(sql)
-        rows = cls.cur.fetchone()[1]
-
-        cls.close_database_connection()
-
-        return rows
-
-
-for i in range(4000, 5226):
+for i in range(1, 17549):
+    table_name = 'C_Chat'
     try:
         url_ls = []
 
@@ -92,7 +73,7 @@ for i in range(4000, 5226):
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
         }
 
-        url = f'https://www.ptt.cc/bbs/Stock/index{str(i)}.html'
+        url = f'https://www.ptt.cc/bbs/{table_name}/index{str(i)}.html'
         sess = requests.session()
         res = sess.get(url=url, headers=headers)
 
@@ -103,8 +84,8 @@ for i in range(4000, 5226):
             if href is not None:
                 url_ls += [{'url': href.get('href'), 'state': 0}]
 
-        sqlTool.insert_data(url_ls)
-        time.sleep(2)
+        sqlTool.insert_data(table_name, url_ls)
+        time.sleep(3)
     except Exception as e:
         print(f'index: {str(i)}')
         print(e)
